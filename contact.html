@@ -84,7 +84,7 @@
                             <div class="google-map contact__google-map">
                                 <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d5367290.161616134!2d-124.59801599647486!3d37.16044410326556!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fb9fe5f285e3d%3A0x8b5109a227086f55!2sCalifornia%2C%20USA!5e1!3m2!1sen!2sin!4v1761652634254!5m2!1sen!2sin" width="100%" height="450px" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                             </div>
-                            <form action="submit.php" class="widget__form contact__form " method="POST" id="main_contact_form">
+                            <form action="submit.php" class="widget__form" method="POST">
                                 <h5 class="widget__form-title">Feel free to contact any time.</h5>
                                 <p class="widget__form-desc">Got a question, idea, or just want to share your thoughts on love? Drop us a message — we’re always listening.</p>
                                 <div class="alert alert-success contact__msg" style="display: none" role="alert">
@@ -127,10 +127,15 @@
                                 <p class="newslettre__desc"> Sign up for free and be the first to get notified about new posts. </p>
                             </div>
 
-                            <form action="#" class="newslettre__form">
-                                <input type="email" class="newslettre__form-input form-control" placeholder="Your email adress" required="required">   
-                                <button class="newslettre__form-submit" type="submit">Subscribe</button>  
+                            <!-- Newsletter Subscribe Form -->
+                            <form id="subscribeForm" class="newslettre__form">
+                                <input type="email" name="email" class="newslettre__form-input form-control"
+                                    placeholder="Your email address" required>
+                                <button class="newslettre__form-submit" type="submit">Subscribe</button>
                             </form>
+
+                            <!-- Response Message -->
+                            <div id="responseMsg" style="margin-top:10px; font-weight:500;"></div>
                             
                             <ul class="list-inline social-media social-media--layout-three">
                                 <li class="social-media__item">
@@ -202,6 +207,38 @@
  
     <!-- JS main  -->
     <script src="assets/js/main.js"></script>
+    <script>
+        document.getElementById("subscribeForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const responseDiv = document.getElementById("responseMsg");
+
+            fetch("subscribe.php", {
+                method: "POST",
+                body: formData
+            })
+                .then(res => res.text())
+                .then(data => {
+                    responseDiv.innerHTML = data;
+
+                    // Auto-hide message after 3 seconds
+                    if (data.trim() !== "") {
+                        setTimeout(() => {
+                            responseDiv.style.opacity = "0";
+                            setTimeout(() => {
+                                responseDiv.innerHTML = "";
+                                responseDiv.style.opacity = "1";
+                            }, 400);
+                        }, 3000);
+                    }
+                })
+                .catch(() => {
+                    responseDiv.innerHTML = "<span style='color:red;'>❌ Something went wrong. Please try again.</span>";
+                    setTimeout(() => { responseDiv.innerHTML = ""; }, 3000);
+                });
+        });
+    </script>
 
 
 </body>

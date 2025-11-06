@@ -230,10 +230,15 @@
                                 <p class="newslettre__desc"> Sign up for free and be the first to get notified about new posts. </p>
                             </div>
 
-                            <form action="#" class="newslettre__form">
-                                <input type="email" class="newslettre__form-input form-control" placeholder="Your email adress" required="required">   
-                                <button class="newslettre__form-submit" type="submit">Subscribe</button>  
+                            <!-- Newsletter Subscribe Form -->
+                            <form id="subscribeForm" class="newslettre__form">
+                                <input type="email" name="email" class="newslettre__form-input form-control"
+                                    placeholder="Your email address" required>
+                                <button class="newslettre__form-submit" type="submit">Subscribe</button>
                             </form>
+
+                            <!-- Response Message -->
+                            <div id="responseMsg" style="margin-top:10px; font-weight:500;"></div>
                             
                             <ul class="list-inline social-media social-media--layout-three">
                                 <li class="social-media__item">
@@ -287,5 +292,37 @@
  
     <!-- JS main  -->
     <script src="assets/js/main.js"></script>
+    <script>
+        document.getElementById("subscribeForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const responseDiv = document.getElementById("responseMsg");
+
+            fetch("subscribe.php", {
+                method: "POST",
+                body: formData
+            })
+                .then(res => res.text())
+                .then(data => {
+                    responseDiv.innerHTML = data;
+
+                    // Auto-hide message after 3 seconds
+                    if (data.trim() !== "") {
+                        setTimeout(() => {
+                            responseDiv.style.opacity = "0";
+                            setTimeout(() => {
+                                responseDiv.innerHTML = "";
+                                responseDiv.style.opacity = "1";
+                            }, 400);
+                        }, 3000);
+                    }
+                })
+                .catch(() => {
+                    responseDiv.innerHTML = "<span style='color:red;'>❌ Something went wrong. Please try again.</span>";
+                    setTimeout(() => { responseDiv.innerHTML = ""; }, 3000);
+                });
+        });
+    </script>
 </body>
 </html>
